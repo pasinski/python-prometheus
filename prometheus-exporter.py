@@ -16,12 +16,9 @@ def getFreeDiskSpacePercentLambdaFactory(path):
 def getMemoryUsage():
     return psutil.virtual_memory().percent
 
-# partitionToMonitor = os.environ['PARTITION_TO_MEASURE']
-
 dps = psutil.disk_partitions()
 
 for partition in dps:
-    print 'used_disk_space'+partition.mountpoint.replace('/', '_').replace('.', '_') 
     g = Gauge('used_disk_space'+partition.mountpoint.replace('/', '_').replace('.', '_'), 'Used disk space in percent')
     g.set_function(getFreeDiskSpacePercentLambdaFactory(partition.mountpoint)) 
 
