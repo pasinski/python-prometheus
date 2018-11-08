@@ -2,6 +2,9 @@ from prometheus_client import start_http_server, Gauge
 import os
 import time
 import psutil
+import re
+
+notAllowedInMetricNameRegex = re.compile('[^A-Za-z_]')
 
 def getCpuStats():
     return psutil.cpu_percent(interval=1)
@@ -19,7 +22,7 @@ def getMemoryUsage():
 dps = psutil.disk_partitions()
 
 for partition in dps:
-    g = Gauge('used_disk_space'+partition.mountpoint.replace('/', '_').replace('.', '_'), 'Used disk space in percent')
+    g = Gauge('used_disk_space'+ notAllowedInMetricNameRegex.sub('_', partition.mountpoint), 'Used disk space in percent')
     g.set_function(getFreeDiskSpacePercentLambdaFactory(partition.mountpoint)) 
 
 
